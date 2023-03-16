@@ -14,15 +14,14 @@ post '/pictures' do
     # generate a filename for the picture 
     filename = params[:picture][:filename]
     name = params[:picture]
-    puts [filename]
-    puts [name]
 
     # save the picture file to disk
     File.open("public/#{filename}", 'wb') do |f|
         f.write(params[:picture][:tempfile].read)
     end
 
-    "#{request.base_url}/pictures/#{filename}"
+    result = {"Permanent link" => "#{request.base_url}/pictures/#{filename}"}
+    return result.to_json
 end 
 
 # route to view the uploaded picture 

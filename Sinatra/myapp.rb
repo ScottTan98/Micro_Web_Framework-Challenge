@@ -5,7 +5,7 @@ require 'rmagick'
 
 # default route message for using this service
 get '/' do 
-    tips = {"picture" => "POST to /pictures with 'file' (image file: .png, .jpg, .jpeg, .gif)(.zip file if you wish to upload multiple pictures at once)."}
+    tips = {"message" => "POST to /pictures with 'picture' (image file: .png, .jpg, .jpeg, .gif) for upload single image & 'zipfile' to upload more than one image"}
     return tips.to_json
 end
 

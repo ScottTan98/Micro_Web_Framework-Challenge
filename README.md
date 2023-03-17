@@ -6,7 +6,7 @@ This is a simple web application built using using Sinatra framework that allow 
 It supports upload single picture/image in common file format e.g. `'.png'`, `'.jpg'`, `'.jpeg'`, and `'.gif'` as well as multiple images by zip file.
 Every uploaded images are stored on the server and can be accessed via permanent link that generated everytime user upload images/pictures.
 
-### Video Demostration: https://www.youtube.com/watch?v=Ev-xFjlw600
+### Video Demostration: https://youtu.be/_cm1GPBhtWY
 
 # Installation
 

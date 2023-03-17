@@ -1,5 +1,13 @@
 require 'sinatra'
 require 'zip'
+require 'rmagick'
+
+
+# default route message for using this service
+get '/' do 
+    tips = {"picture" => "POST to /pictures with 'file' (image file: .png, .jpg, .jpeg, .gif)(.zip file if you wish to upload multiple pictures at once)."}
+    return tips.to_json
+end
 
 # route to upload picture 
 post '/pictures' do
@@ -24,8 +32,17 @@ post '/pictures' do
     # save the picture file to disk
         File.open("public/#{filename}", 'wb') do |f|
             f.write(params[:picture][:tempfile].read)
-
         end
+    
+    # generate thumbnails of the uploaded picture
+        image = Magick::Image.read("public/#{filename}").first
+        if image.columns >= 128 && image.rows >= 128
+            size_64 = image.resize_to_fit(64,64)
+            size_64.write("public/#{File.basename(filename, '.*')}_size_64#{File.extname(filename)}")
+            size_32 = image.resize_to_fit(32,32)
+            size_32.write("public/#{File.basename(filename, '.*')}_size_32#{File.extname(filename)}")
+        end
+
         result = {"Permanent link" => "#{request.base_url}/pictures/#{filename}"}
         return result.to_json
     
@@ -42,6 +59,15 @@ post '/pictures' do
                     File.delete("public/#{filename}") if File.exist?("public/#{filename}")
                     picture.extract("public/#{filename}")
                     filenames.append("#{request.base_url}/pictures/#{filename}")
+
+                    # generate thumbnails of the uploaded picture
+                    image = Magick::Image.read("public/#{filename}").first
+                    if image.columns >= 128 && image.rows >= 128
+                        size_64 = image.resize_to_fit(64,64)
+                        size_64.write("public/#{File.basename(filename, '.*')}_size_64#{File.extname(filename)}")
+                        size_32 = image.resize_to_fit(32,32)
+                        size_32.write("public/#{File.basename(filename, '.*')}_size_32#{File.extname(filename)}")
+                    end
                 end 
             end
             #loop through the filenames and print permanent link

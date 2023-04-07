@@ -25,23 +25,32 @@ post '/pictures' do
         halt 400, 'Bad request: Please upload a valid zip file.'
     end
 
+
+
     # generate a filename for the picture 
     if params[:picture]
         filename = params[:picture][:filename]
 
-    # save the picture file to disk
+
+        # save the picture file to disk
         File.open("public/#{filename}", 'wb') do |f|
             f.write(params[:picture][:tempfile].read)
         end
     
-    # generate thumbnails of the uploaded picture
-        image = Magick::Image.read("public/#{filename}").first
-        if image.columns >= 128 && image.rows >= 128
-            size_64 = image.resize_to_fit(64,64)
-            size_64.write("public/#{File.basename(filename, '.*')}_size_64#{File.extname(filename)}")
-            size_32 = image.resize_to_fit(32,32)
-            size_32.write("public/#{File.basename(filename, '.*')}_size_32#{File.extname(filename)}")
+        # generate thumbnails of the uploaded picture
+        begin
+            image = Magick::Image.read("public/#{filename}").first
+            if image.columns >= 128 && image.rows >= 128
+                size_64 = image.resize_to_fit(64,64)
+                size_64.write("public/#{File.basename(filename, '.*')}_size_64#{File.extname(filename)}")
+                size_32 = image.resize_to_fit(32,32)
+                size_32.write("public/#{File.basename(filename, '.*')}_size_32#{File.extname(filename)}")
+            end
+        # Check if the uploaded image file is corrupted
+        rescue Magick::ImageMagickError => e
+            halt 400, "Bad request: corrupted file(#{e.message})"
         end
+        
 
         result = {"Permanent link" => "#{request.base_url}/pictures/#{filename}"}
         return result.to_json

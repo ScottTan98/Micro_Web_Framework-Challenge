@@ -52,7 +52,7 @@ post '/pictures' do
         filenames = []
         Zip::File.open(params[:zipfile][:tempfile]) do |zip_file|
             for picture in zip_file
-                #recheck again is the zip file all is contain picture type
+                #recheck again is the zip file contain is picture type
                 if picture.file? && ['.jpeg', '.jpg', '.png', '.gif'].include?(File.extname(picture.name).downcase)
                     filename = picture.name
                     # replace the picture when there is the same picture name
@@ -68,12 +68,22 @@ post '/pictures' do
                         size_32 = image.resize_to_fit(32,32)
                         size_32.write("public/#{File.basename(filename, '.*')}_size_32#{File.extname(filename)}")
                     end
+                else 
+                    # If the the zipfile contain is not a picture
+                    notPicture = picture.name
+                    filenames.append("#{notPicture} is not a image file")
                 end 
             end
-            #loop through the filenames and print permanent link
+            # loop through the filenames and print permanent link
             result = []
             for filename in filenames
-                result.append({"Permanent link" => "#{filename}"})
+                if filename[0,4] == "http"
+                    result.append({"Permanent link" => "#{filename}"})
+                else
+                    # prompt error message if file is not a link
+                    result.append({"Error" => "#{filename}"})
+                end
+                
             end
             return result.to_json
         end

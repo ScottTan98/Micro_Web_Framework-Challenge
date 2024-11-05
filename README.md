@@ -1,4 +1,4 @@
-# Micro_Web_Framework-Challenge-ServiceRocket (Scott Tan)
+# Micro_Web_Framework-Challenge
 
 I will be choosing the Sinatra for Ruby for this project/service.
 
